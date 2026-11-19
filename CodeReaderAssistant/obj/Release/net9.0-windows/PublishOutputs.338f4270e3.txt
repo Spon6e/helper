@@ -1,0 +1,5 @@
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.exe
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.dll
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.deps.json
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.runtimeconfig.json
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.pdb

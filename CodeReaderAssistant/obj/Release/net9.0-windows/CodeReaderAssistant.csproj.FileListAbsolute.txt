@@ -1,0 +1,14 @@
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.AssemblyInfoInputs.cache
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.AssemblyInfo.cs
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.csproj.CoreCompileInputs.cache
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\CodeReaderAssistant.exe
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\CodeReaderAssistant.deps.json
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\CodeReaderAssistant.runtimeconfig.json
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\CodeReaderAssistant.dll
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\CodeReaderAssistant.pdb
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.dll
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\refint\CodeReaderAssistant.dll
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.pdb
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.genruntimeconfig.cache
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\ref\CodeReaderAssistant.dll
