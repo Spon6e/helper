@@ -17,12 +17,12 @@ public sealed class MainForm : Form
     private readonly ComboBox modeCombo = new();
     private readonly ComboBox languageCombo = new();
     private readonly TextBox selectedTextBox = new();
-    private readonly RichTextBox resultBox = new();
+    private readonly RichTextBox definitionBox = new();
+    private readonly RichTextBox exampleBox = new();
     private readonly Label languageLabel = new();
     private readonly Label statusLabel = new();
     private readonly CheckBox topMostCheckBox = new();
     private readonly CheckBox autoProcessCheckBox = new();
-    private readonly TextBox notesBox = new();
     private readonly System.Windows.Forms.Timer selectionTimer = new();
     private readonly MemoryStore memory = new();
     private Button refreshButton = new();
@@ -78,9 +78,9 @@ public sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 8,
+            RowCount = 7,
             Padding = new Padding(24),
-            BackColor = BackColor,
+            BackColor = WindowColor,
         };
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
@@ -88,7 +88,6 @@ public sealed class MainForm : Form
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 112));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
         Controls.Add(root);
 
@@ -231,52 +230,25 @@ public sealed class MainForm : Form
         resultPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
         resultPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         resultPanel.Controls.Add(MakeLabel("Результат"), 0, 0);
-        resultBox.Dock = DockStyle.Fill;
-        resultBox.ReadOnly = true;
-        resultBox.BackColor = InputColor;
-        resultBox.ForeColor = PrimaryTextColor;
-        resultBox.BorderStyle = BorderStyle.FixedSingle;
-        resultBox.Font = new Font("Segoe UI", 14F);
-        resultBox.DetectUrls = false;
-        resultBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-        resultPanel.Controls.Add(resultBox, 0, 1);
-        root.Controls.Add(resultPanel, 0, 5);
-
-        var notesPanel = new TableLayoutPanel
+        var resultAreas = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            ColumnCount = 1,
-            RowCount = 2,
+            ColumnCount = 2,
+            RowCount = 1,
             BackColor = BackColor,
         };
-        notesPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-        notesPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        var notesHeader = new Panel { Dock = DockStyle.Fill };
-        var notesLabel = MakeLabel("Моя заметка");
-        notesLabel.Width = 160;
-        notesLabel.Dock = DockStyle.Left;
-        var saveNoteButton = MakeButton("Сохранить заметку", 155, Color.FromArgb(62, 82, 125));
-        saveNoteButton.Dock = DockStyle.Right;
-        saveNoteButton.Margin = new Padding(0, 0, 0, 0);
-        saveNoteButton.Click += (_, _) => SaveCurrentNote();
-        notesHeader.Controls.Add(notesLabel);
-        notesHeader.Controls.Add(saveNoteButton);
-        notesPanel.Controls.Add(notesHeader, 0, 0);
-        notesBox.Multiline = true;
-        notesBox.ScrollBars = ScrollBars.Vertical;
-        notesBox.Dock = DockStyle.Fill;
-        notesBox.BackColor = InputColor;
-        notesBox.ForeColor = PrimaryTextColor;
-        notesBox.BorderStyle = BorderStyle.FixedSingle;
-        notesBox.Font = new Font("Segoe UI", 11F);
-        notesPanel.Controls.Add(notesBox, 0, 1);
-        root.Controls.Add(notesPanel, 0, 6);
+        resultAreas.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
+        resultAreas.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
+        resultAreas.Controls.Add(CreateOutputSection("Определение / перевод", definitionBox, new Font("Segoe UI", 14F)), 0, 0);
+        resultAreas.Controls.Add(CreateOutputSection("Пример использования", exampleBox, new Font("Consolas", 12F)), 1, 0);
+        resultPanel.Controls.Add(resultAreas, 0, 1);
+        root.Controls.Add(resultPanel, 0, 5);
 
         statusLabel.ForeColor = SecondaryTextColor;
         statusLabel.AutoEllipsis = true;
         statusLabel.Dock = DockStyle.Fill;
         statusLabel.TextAlign = ContentAlignment.MiddleLeft;
-        root.Controls.Add(statusLabel, 0, 7);
+        root.Controls.Add(statusLabel, 0, 6);
         statusLabel.Text = "Выделите текст в редакторе — приложение обработает его автоматически.";
     }
 
@@ -305,10 +277,9 @@ public sealed class MainForm : Form
         var mode = modeCombo.SelectedIndex == 1 ? AppMode.Programming : AppMode.Translator;
         var language = languageCombo.SelectedIndex == 1 ? ProgrammingLanguage.Cpp : ProgrammingLanguage.Python;
         var cached = memory.Find(value, mode, language);
-        if (!forceRefresh && cached is { Result.Length: > 0 })
+        if (!forceRefresh && cached is { Definition.Length: > 0 })
         {
-            resultBox.Text = cached.Result;
-            notesBox.Text = cached.Note;
+            ShowResult(new AssistantResult(cached.Definition, cached.Example), mode);
             refreshButton.Enabled = true;
             statusLabel.Text = "Готово из памяти. Нажмите «Пересчитать», чтобы получить новый разбор.";
             statusLabel.ForeColor = Color.FromArgb(145, 158, 178);
@@ -320,7 +291,8 @@ public sealed class MainForm : Form
         var requestCancellation = new CancellationTokenSource();
         activeRequest = requestCancellation;
 
-        resultBox.Text = "Обрабатываю выделение...";
+        definitionBox.Text = "Обрабатываю выделение...";
+        exampleBox.Clear();
         statusLabel.Text = "Использую локальную справку и переводчик.";
         statusLabel.ForeColor = Color.FromArgb(145, 158, 178);
         refreshButton.Enabled = false;
@@ -335,8 +307,8 @@ public sealed class MainForm : Form
 
             if (!requestCancellation.IsCancellationRequested)
             {
-                resultBox.Text = result;
-                memory.SaveResult(value, mode, language, result);
+                ShowResult(result, mode);
+                memory.SaveResult(value, mode, language, result.Definition, result.Example);
                 refreshButton.Enabled = true;
                 statusLabel.Text = "Готово. Ответ сохранён в локальную память.";
             }
@@ -349,7 +321,8 @@ public sealed class MainForm : Form
         {
             if (!requestCancellation.IsCancellationRequested)
             {
-                resultBox.Text = $"Не удалось обработать выделение.\r\n\r\n{exception.Message}";
+                definitionBox.Text = $"Не удалось обработать выделение.\r\n\r\n{exception.Message}";
+                exampleBox.Clear();
                 statusLabel.Text = "Не удалось обработать выделение.";
                 statusLabel.ForeColor = Color.FromArgb(255, 140, 140);
             }
@@ -363,6 +336,16 @@ public sealed class MainForm : Form
 
             requestCancellation.Dispose();
         }
+    }
+
+    private void ShowResult(AssistantResult result, AppMode mode)
+    {
+        definitionBox.Text = result.Definition;
+        exampleBox.Text = result.Example.Length > 0
+            ? result.Example
+            : mode == AppMode.Translator
+                ? "Для перевода пример использования не требуется."
+                : "Для этой конструкции пример пока не добавлен.";
     }
 
     private void CheckForSelectedText()
@@ -432,22 +415,6 @@ public sealed class MainForm : Form
         return string.Empty;
     }
 
-    private void SaveCurrentNote()
-    {
-        var value = selectedTextBox.Text.Trim();
-        if (value.Length == 0)
-        {
-            statusLabel.Text = "Сначала выберите или вставьте текст, к которому нужно добавить заметку.";
-            return;
-        }
-
-        var mode = modeCombo.SelectedIndex == 1 ? AppMode.Programming : AppMode.Translator;
-        var language = languageCombo.SelectedIndex == 1 ? ProgrammingLanguage.Cpp : ProgrammingLanguage.Python;
-        memory.SaveNote(value, mode, language, notesBox.Text);
-        statusLabel.Text = "Заметка сохранена локально.";
-        statusLabel.ForeColor = Color.FromArgb(145, 158, 178);
-    }
-
     private void PasteClipboardText()
     {
         try
@@ -473,6 +440,33 @@ public sealed class MainForm : Form
     {
         GetWindowThreadProcessId(windowHandle, out var processId);
         return processId == (uint)Environment.ProcessId;
+    }
+
+    private static TableLayoutPanel CreateOutputSection(string title, RichTextBox box, Font font)
+    {
+        var panel = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            BackColor = WindowColor,
+            Padding = new Padding(0, 0, 8, 0),
+        };
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+        panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        panel.Controls.Add(MakeLabel(title), 0, 0);
+
+        box.Dock = DockStyle.Fill;
+        box.ReadOnly = true;
+        box.BackColor = InputColor;
+        box.ForeColor = PrimaryTextColor;
+        box.BorderStyle = BorderStyle.FixedSingle;
+        box.Font = font;
+        box.DetectUrls = false;
+        box.ScrollBars = RichTextBoxScrollBars.Vertical;
+        box.Margin = new Padding(0, 0, 0, 0);
+        panel.Controls.Add(box, 0, 1);
+        return panel;
     }
 
     private static Label MakeLabel(string text) => new()

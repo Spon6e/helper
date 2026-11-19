@@ -10,14 +10,14 @@ public sealed class MemoryEntry
     public string Mode { get; set; } = string.Empty;
     public string Language { get; set; } = string.Empty;
     public string Input { get; set; } = string.Empty;
-    public string Result { get; set; } = string.Empty;
-    public string Note { get; set; } = string.Empty;
+    public string Definition { get; set; } = string.Empty;
+    public string Example { get; set; } = string.Empty;
     public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class MemoryStore
 {
-    private const string MemoryVersion = "local-v3";
+    private const string MemoryVersion = "local-v4";
     private readonly object sync = new();
     private readonly string filePath;
     private readonly List<MemoryEntry> entries;
@@ -43,7 +43,12 @@ public sealed class MemoryStore
         }
     }
 
-    public void SaveResult(string input, AppMode mode, ProgrammingLanguage language, string result)
+    public void SaveResult(
+        string input,
+        AppMode mode,
+        ProgrammingLanguage language,
+        string definition,
+        string example)
     {
         var key = MakeKey(input, mode, language);
         lock (sync)
@@ -61,31 +66,8 @@ public sealed class MemoryStore
                 entries.Add(entry);
             }
 
-            entry.Result = result;
-            entry.UpdatedAtUtc = DateTime.UtcNow;
-            Persist();
-        }
-    }
-
-    public void SaveNote(string input, AppMode mode, ProgrammingLanguage language, string note)
-    {
-        var key = MakeKey(input, mode, language);
-        lock (sync)
-        {
-            var entry = entries.FirstOrDefault(item => item.Key == key);
-            if (entry is null)
-            {
-                entry = new MemoryEntry
-                {
-                    Key = key,
-                    Mode = mode.ToString(),
-                    Language = language.ToString(),
-                    Input = input,
-                };
-                entries.Add(entry);
-            }
-
-            entry.Note = note;
+            entry.Definition = definition;
+            entry.Example = example;
             entry.UpdatedAtUtc = DateTime.UtcNow;
             Persist();
         }
@@ -123,8 +105,8 @@ public sealed class MemoryStore
         Mode = entry.Mode,
         Language = entry.Language,
         Input = entry.Input,
-        Result = entry.Result,
-        Note = entry.Note,
+        Definition = entry.Definition,
+        Example = entry.Example,
         UpdatedAtUtc = entry.UpdatedAtUtc,
     };
 

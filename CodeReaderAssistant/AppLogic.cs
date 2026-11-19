@@ -16,6 +16,8 @@ public enum ProgrammingLanguage
     Cpp
 }
 
+public sealed record AssistantResult(string Definition, string Example);
+
 public static class LocalAssistant
 {
     private static readonly Dictionary<string, string> PythonTerms = new(StringComparer.OrdinalIgnoreCase)
@@ -125,6 +127,73 @@ public static class LocalAssistant
         ["requests"] = "сторонняя библиотека для HTTP-запросов.",
         ["numpy"] = "библиотека массивов и численных вычислений.",
         ["pandas"] = "библиотека таблиц и анализа данных.",
+        ["__file__"] = "путь к текущему файлу Python.",
+        ["__main__"] = "имя модуля при запуске файла как основной программы.",
+        ["__all__"] = "список имён, экспортируемых через import *.",
+        ["__slots__"] = "ограничивает набор атрибутов экземпляра и может уменьшить расход памяти.",
+        ["nonlocal"] = "указывает на переменную из внешней, но не глобальной функции.",
+        ["match_args"] = "настройка dataclass для сопоставления позиционных аргументов.",
+        ["case"] = "ветка шаблона внутри match.",
+        ["async_generator"] = "генератор, выдающий значения через async for.",
+        ["anext"] = "получает следующее значение асинхронного итератора.",
+        ["aiter"] = "создаёт асинхронный итератор.",
+        ["memoryview"] = "представление буфера без копирования данных.",
+        ["bytearray"] = "изменяемая последовательность байтов.",
+        ["ascii"] = "возвращает строковое представление с ASCII-символами.",
+        ["hex"] = "преобразует число в шестнадцатеричную строку.",
+        ["oct"] = "преобразует число в восьмеричную строку.",
+        ["divmod"] = "возвращает частное и остаток от деления.",
+        ["format_map"] = "форматирует строку по значениям отображения.",
+        ["get"] = "получает значение из словаря с возможным значением по умолчанию.",
+        ["setdefault"] = "получает значение словаря или записывает значение по умолчанию.",
+        ["update"] = "обновляет словарь элементами другой коллекции.",
+        ["items"] = "возвращает пары ключ-значение словаря.",
+        ["keys"] = "возвращает ключи словаря.",
+        ["values"] = "возвращает значения словаря.",
+        ["append"] = "добавляет элемент в конец списка.",
+        ["extend"] = "добавляет в список элементы другой последовательности.",
+        ["insert"] = "вставляет элемент списка по индексу.",
+        ["pop"] = "удаляет и возвращает элемент списка или словаря.",
+        ["remove"] = "удаляет первое совпадение из списка.",
+        ["sort"] = "сортирует список на месте.",
+        ["copy"] = "создаёт неглубокую копию объекта или коллекции.",
+        ["deepcopy"] = "создаёт глубокую копию вложенной структуры.",
+        ["dataclass"] = "декоратор для автоматического создания методов класса данных.",
+        ["staticmethod"] = "превращает метод класса в функцию без self и cls.",
+        ["classmethod"] = "создаёт метод, получающий класс через cls.",
+        ["abstractmethod"] = "помечает метод, который должен реализовать дочерний класс.",
+        ["contextmanager"] = "декоратор для создания контекстного менеджера из генератора.",
+        ["decorator"] = "объект, изменяющий или оборачивающий функцию или класс.",
+        ["overload"] = "описание нескольких вариантов сигнатуры для проверки типов.",
+        ["Protocol"] = "структурный интерфейс для типизации объектов.",
+        ["Optional"] = "тип, допускающий значение указанного типа или None.",
+        ["Union"] = "тип, допускающий одно из нескольких типов.",
+        ["Literal"] = "тип, ограниченный конкретными значениями.",
+        ["TypeVar"] = "переменная типа для обобщённых функций и классов.",
+        ["cast"] = "сообщает анализатору типов предполагаемый тип значения.",
+        ["Final"] = "помечает имя как не предназначенное для переопределения.",
+        ["logging"] = "стандартный модуль журналирования событий программы.",
+        ["logger"] = "объект для записи сообщений в журнал.",
+        ["subprocess"] = "модуль запуска внешних процессов.",
+        ["socket"] = "модуль низкоуровневого сетевого взаимодействия.",
+        ["sqlite3"] = "стандартный модуль работы с базой SQLite.",
+        ["csv"] = "модуль чтения и записи CSV-файлов.",
+        ["pickle"] = "сериализация объектов Python; не используйте для недоверенных данных.",
+        ["hashlib"] = "модуль криптографических хеш-функций.",
+        ["base64"] = "кодирование и декодирование данных в Base64.",
+        ["urllib"] = "модуль работы с URL и HTTP на базовом уровне.",
+        ["http"] = "пакет серверов и клиентов HTTP.",
+        ["shutil"] = "высокоуровневые операции с файлами и каталогами.",
+        ["tempfile"] = "создание временных файлов и каталогов.",
+        ["glob"] = "поиск файлов по шаблону пути.",
+        ["unittest"] = "стандартный фреймворк модульного тестирования.",
+        ["pytest"] = "популярный сторонний фреймворк тестирования Python.",
+        ["flask"] = "микрофреймворк для веб-приложений.",
+        ["django"] = "веб-фреймворк Python с готовой инфраструктурой.",
+        ["fastapi"] = "фреймворк для быстрых API на Python.",
+        ["matplotlib"] = "библиотека построения графиков.",
+        ["torch"] = "библиотека машинного обучения PyTorch.",
+        ["tensorflow"] = "библиотека машинного обучения TensorFlow.",
     };
 
     private static readonly Dictionary<string, string> CppTerms = new(StringComparer.OrdinalIgnoreCase)
@@ -213,6 +282,7 @@ public static class LocalAssistant
         ["array"] = "контейнер фиксированного размера std::array.",
         ["deque"] = "двусторонняя очередь std::deque.",
         ["list"] = "двусвязный список std::list.",
+        ["set"] = "отсортированное множество уникальных значений std::set.",
         ["map"] = "отсортированный контейнер пар ключ-значение std::map.",
         ["unordered_map"] = "хеш-таблица пар ключ-значение.",
         ["unordered_set"] = "хеш-множество уникальных значений.",
@@ -236,6 +306,217 @@ public static class LocalAssistant
         ["thread"] = "поток выполнения std::thread.",
         ["future"] = "объект для получения результата асинхронной операции.",
         ["async"] = "запускает функцию асинхронно и возвращает future.",
+        ["char"] = "целочисленный тип для хранения символа.",
+        ["char8_t"] = "тип для одного элемента UTF-8 строки в C++20.",
+        ["char16_t"] = "тип для элемента UTF-16 строки.",
+        ["char32_t"] = "тип для элемента UTF-32 строки.",
+        ["float"] = "число с плавающей точкой одинарной точности.",
+        ["long long"] = "целочисленный тип большой разрядности; обычно long long.",
+        ["register"] = "устаревшая подсказка компилятору хранить переменную в регистре.",
+        ["typeid"] = "получает информацию о типе объекта во время выполнения.",
+        ["true"] = "логическое значение истина.",
+        ["false"] = "логическое значение ложь.",
+        ["and"] = "альтернативная запись логического оператора &&.",
+        ["and_eq"] = "альтернативная запись оператора &=.",
+        ["bitand"] = "альтернативная запись побитового оператора &.",
+        ["bitor"] = "альтернативная запись побитового оператора |.",
+        ["compl"] = "альтернативная запись побитового отрицания ~.",
+        ["not_eq"] = "альтернативная запись оператора !=.",
+        ["or_eq"] = "альтернативная запись оператора |=.",
+        ["xor"] = "альтернативная запись побитового исключающего ИЛИ ^.",
+        ["xor_eq"] = "альтернативная запись оператора ^=.",
+        ["const_cast"] = "убирает или добавляет const; применять только при чётком понимании владения объектом.",
+        ["dynamic_cast"] = "безопасно проверяет преобразование в производный полиморфный тип.",
+        ["reinterpret_cast"] = "низкоуровнево переинтерпретирует тип; применять крайне осторожно.",
+        ["static_cast"] = "выполняет явное преобразование типов, проверяемое на этапе компиляции.",
+        ["concept"] = "именованное ограничение для параметров шаблона в C++20.",
+        ["import"] = "подключает модуль C++20.",
+        ["module"] = "объявляет модуль C++20.",
+        ["deprecated"] = "помечает сущность как устаревшую и нежелательную для нового кода.",
+        ["nodiscard"] = "просит компилятор предупредить об игнорировании результата.",
+        ["maybe_unused"] = "подавляет предупреждение о намеренно неиспользуемой сущности.",
+        ["likely"] = "подсказывает, что ветка условия, вероятно, будет выполнена.",
+        ["unlikely"] = "подсказывает, что ветка условия, вероятно, не будет выполнена.",
+        ["allocator"] = "объект, отвечающий за выделение памяти контейнера.",
+        ["iterator"] = "объект для последовательного обхода элементов контейнера.",
+        ["const_iterator"] = "итератор только для чтения элементов контейнера.",
+        ["reverse_iterator"] = "итератор, обходящий контейнер в обратном порядке.",
+        ["emplace"] = "создаёт элемент прямо внутри контейнера из переданных аргументов.",
+        ["emplace_back"] = "создаёт элемент в конце контейнера без промежуточной копии.",
+        ["emplace_front"] = "создаёт элемент в начале контейнера без промежуточной копии.",
+        ["push_back"] = "добавляет существующий или перемещаемый элемент в конец контейнера.",
+        ["pop_back"] = "удаляет последний элемент контейнера.",
+        ["push_front"] = "добавляет элемент в начало контейнера.",
+        ["pop_front"] = "удаляет первый элемент контейнера.",
+        ["front"] = "возвращает первый элемент контейнера.",
+        ["back"] = "возвращает последний элемент контейнера.",
+        ["begin"] = "возвращает итератор на первый элемент диапазона.",
+        ["end"] = "возвращает итератор за последним элементом диапазона.",
+        ["cbegin"] = "возвращает константный итератор на начало контейнера.",
+        ["cend"] = "возвращает константный итератор за концом контейнера.",
+        ["rbegin"] = "возвращает обратный итератор на последний элемент.",
+        ["rend"] = "возвращает обратный итератор за первым элементом.",
+        ["size"] = "возвращает количество элементов контейнера.",
+        ["empty"] = "проверяет, пуст ли контейнер или диапазон.",
+        ["capacity"] = "возвращает объём зарезервированной памяти контейнера.",
+        ["reserve"] = "заранее резервирует память под указанное число элементов.",
+        ["resize"] = "изменяет количество элементов контейнера.",
+        ["clear"] = "удаляет все элементы контейнера.",
+        ["insert"] = "вставляет элемент или диапазон элементов в контейнер.",
+        ["erase"] = "удаляет элемент или диапазон элементов из контейнера.",
+        ["swap"] = "обменивает содержимое двух объектов.",
+        ["at"] = "возвращает элемент по индексу с проверкой границ.",
+        ["data"] = "возвращает указатель на непрерывный массив данных контейнера.",
+        ["value_type"] = "тип значения, которое хранит контейнер.",
+        ["key_type"] = "тип ключа ассоциативного контейнера.",
+        ["make_pair"] = "создаёт объект std::pair из двух значений.",
+        ["tie"] = "связывает ссылки с элементами tuple или pair.",
+        ["nullopt"] = "специальное значение, обозначающее пустой optional.",
+        ["monostate"] = "пустой альтернативный тип для variant.",
+        ["enable_shared_from_this"] = "позволяет объекту безопасно получить shared_ptr на самого себя.",
+        ["accumulate"] = "сворачивает диапазон элементов в одно накопленное значение.",
+        ["all_of"] = "проверяет, что условие истинно для всех элементов диапазона.",
+        ["any_of"] = "проверяет, что условие истинно хотя бы для одного элемента.",
+        ["none_of"] = "проверяет, что условие не выполнено ни для одного элемента.",
+        ["binary_search"] = "проверяет наличие значения в отсортированном диапазоне.",
+        ["copy"] = "копирует элементы из одного диапазона в другой.",
+        ["copy_if"] = "копирует только элементы, удовлетворяющие условию.",
+        ["count"] = "считает элементы, равные указанному значению.",
+        ["count_if"] = "считает элементы, удовлетворяющие условию.",
+        ["fill"] = "заполняет диапазон одним значением.",
+        ["find_if"] = "ищет первый элемент, удовлетворяющий условию.",
+        ["lower_bound"] = "находит первую позицию, где можно вставить значение в отсортированный диапазон.",
+        ["upper_bound"] = "находит позицию после последних элементов, равных значению.",
+        ["max_element"] = "находит максимальный элемент диапазона.",
+        ["min_element"] = "находит минимальный элемент диапазона.",
+        ["minmax_element"] = "одновременно находит минимальный и максимальный элементы.",
+        ["remove_if"] = "перемещает элементы, удовлетворяющие условию, в конец диапазона.",
+        ["replace"] = "заменяет в диапазоне одно значение на другое.",
+        ["replace_if"] = "заменяет элементы, удовлетворяющие условию.",
+        ["reverse"] = "разворачивает порядок элементов диапазона.",
+        ["rotate"] = "циклически сдвигает элементы диапазона.",
+        ["stable_sort"] = "сортирует диапазон, сохраняя порядок равных элементов.",
+        ["transform"] = "применяет функцию к элементам и записывает результат.",
+        ["unique"] = "убирает соседние дубликаты, перемещая их в конец диапазона.",
+        ["clamp"] = "ограничивает значение заданным минимумом и максимумом.",
+        ["iota"] = "заполняет диапазон последовательными значениями.",
+        ["partition"] = "разделяет диапазон по условию на две части.",
+        ["shuffle"] = "случайно перемешивает элементы диапазона.",
+        ["merge"] = "сливает два отсортированных диапазона в один.",
+        ["numeric_limits"] = "предоставляет пределы и свойства числового типа.",
+        ["string_view"] = "лёгкое неподлежащее владению представление строки.",
+        ["wstring"] = "строка из wchar_t.",
+        ["u8string"] = "строка, хранящая UTF-8 символы.",
+        ["u16string"] = "строка, хранящая UTF-16 символы.",
+        ["u32string"] = "строка, хранящая UTF-32 символы.",
+        ["to_string"] = "преобразует значение в std::string.",
+        ["stoi"] = "преобразует строку в int.",
+        ["stol"] = "преобразует строку в long.",
+        ["stoll"] = "преобразует строку в long long.",
+        ["stof"] = "преобразует строку в float.",
+        ["stod"] = "преобразует строку в double.",
+        ["to_chars"] = "быстро преобразует число в диапазон символов.",
+        ["from_chars"] = "быстро разбирает число из диапазона символов.",
+        ["stringstream"] = "поток для чтения и записи в строку.",
+        ["istringstream"] = "поток для чтения данных из строки.",
+        ["ostringstream"] = "поток для формирования строки.",
+        ["fstream"] = "поток для чтения и записи файла.",
+        ["streambuf"] = "буфер, через который работают потоки ввода-вывода.",
+        ["flush"] = "принудительно сбрасывает буфер потока.",
+        ["read"] = "читает указанное количество байт или символов из потока.",
+        ["write"] = "записывает байты или символы в поток.",
+        ["seekg"] = "перемещает позицию чтения во входном потоке.",
+        ["seekp"] = "перемещает позицию записи в выходном потоке.",
+        ["tellg"] = "возвращает текущую позицию чтения.",
+        ["tellp"] = "возвращает текущую позицию записи.",
+        ["good"] = "проверяет, что поток находится в рабочем состоянии.",
+        ["fail"] = "проверяет, произошла ли ошибка операции потока.",
+        ["eof"] = "проверяет достижение конца входного потока.",
+        ["bad"] = "проверяет серьёзную ошибку потока.",
+        ["filesystem"] = "пространство имён для работы с файлами и каталогами.",
+        ["path"] = "объект пути к файлу или каталогу.",
+        ["directory_iterator"] = "перебирает содержимое каталога.",
+        ["recursive_directory_iterator"] = "перебирает каталог вместе с вложенными каталогами.",
+        ["exists"] = "проверяет существование файла или каталога.",
+        ["is_directory"] = "проверяет, является ли путь каталогом.",
+        ["is_regular_file"] = "проверяет, является ли путь обычным файлом.",
+        ["file_size"] = "возвращает размер файла.",
+        ["create_directory"] = "создаёт каталог.",
+        ["remove_all"] = "удаляет путь и всё его содержимое.",
+        ["condition_variable"] = "уведомляет потоки о наступлении условия.",
+        ["atomic"] = "обеспечивает атомарный доступ к значению между потоками.",
+        ["atomic_bool"] = "атомарный логический тип.",
+        ["unique_lock"] = "гибкая RAII-блокировка mutex с возможностью временно отпустить его.",
+        ["scoped_lock"] = "одновременно и безопасно блокирует несколько mutex.",
+        ["once_flag"] = "флаг для однократного выполнения функции.",
+        ["call_once"] = "гарантирует однократный вызов функции из нескольких потоков.",
+        ["promise"] = "объект, через который один поток передаёт результат future.",
+        ["packaged_task"] = "оборачивает вызываемый объект и связывает его с future.",
+        ["jthread"] = "поток C++20 с автоматическим ожиданием завершения.",
+        ["stop_token"] = "механизм кооперативной остановки jthread.",
+        ["latch"] = "одноразовый счётчик синхронизации потоков.",
+        ["barrier"] = "многоразовая точка синхронизации потоков.",
+        ["semaphore"] = "счётчик разрешений для ограничения одновременного доступа.",
+        ["chrono"] = "пространство имён для времени и длительностей.",
+        ["duration"] = "тип промежутка времени с заданной единицей.",
+        ["time_point"] = "точка времени на часах.",
+        ["system_clock"] = "часы реального календарного времени.",
+        ["steady_clock"] = "монотонные часы для измерения интервалов.",
+        ["high_resolution_clock"] = "часы с максимально доступным разрешением.",
+        ["milliseconds"] = "единица времени в миллисекундах.",
+        ["seconds"] = "единица времени в секундах.",
+        ["minutes"] = "единица времени в минутах.",
+        ["hours"] = "единица времени в часах.",
+        ["duration_cast"] = "преобразует duration в другую единицу времени.",
+        ["sleep_for"] = "приостанавливает поток на указанную длительность.",
+        ["sleep_until"] = "приостанавливает поток до указанной точки времени.",
+        ["regex"] = "объект регулярного выражения.",
+        ["smatch"] = "результат поиска регулярного выражения в строке.",
+        ["regex_match"] = "проверяет, совпадает ли вся строка с регулярным выражением.",
+        ["regex_search"] = "ищет совпадение регулярного выражения в строке.",
+        ["regex_replace"] = "заменяет совпадения регулярного выражения.",
+        ["logic_error"] = "исключение из-за ошибки логики программы.",
+        ["invalid_argument"] = "исключение из-за недопустимого аргумента.",
+        ["out_of_range"] = "исключение при выходе за допустимый диапазон.",
+        ["system_error"] = "исключение, связанное с ошибкой системной операции.",
+        ["error_code"] = "объект с кодом ошибки без немедленного выброса исключения.",
+        ["current_exception"] = "сохраняет текущее исключение в exception_ptr.",
+        ["rethrow_exception"] = "повторно выбрасывает сохранённое исключение.",
+        ["exception_ptr"] = "безопасный указатель на сохранённое исключение.",
+        ["ranges"] = "пространство имён C++20 для работы с диапазонами.",
+        ["views"] = "ленивые представления диапазонов без копирования данных.",
+        ["filter_view"] = "представление только элементов, прошедших условие.",
+        ["transform_view"] = "ленивое представление с преобразованием элементов.",
+        ["take_view"] = "представление первых N элементов диапазона.",
+        ["drop_view"] = "представление диапазона без первых N элементов.",
+        ["subrange"] = "диапазон, заданный парой итераторов или sentinel.",
+        ["same_as"] = "концепция, проверяющая совпадение типов.",
+        ["integral"] = "концепция целочисленного типа.",
+        ["floating_point"] = "концепция типа с плавающей точкой.",
+        ["convertible_to"] = "концепция возможности преобразования одного типа в другой.",
+        ["derived_from"] = "концепция наследования от указанного базового типа.",
+        ["invocable"] = "концепция вызываемого объекта с заданными аргументами.",
+        ["coroutine_handle"] = "объект управления корутиной.",
+        ["suspend_always"] = "объект, всегда приостанавливающий корутину.",
+        ["suspend_never"] = "объект, не приостанавливающий корутину.",
+        ["bitset"] = "контейнер фиксированного набора битов.",
+        ["complex"] = "тип комплексного числа.",
+        ["random_device"] = "источник недетерминированных случайных значений, если доступен.",
+        ["mt19937"] = "генератор псевдослучайных чисел Mersenne Twister.",
+        ["uniform_int_distribution"] = "равномерное распределение целых чисел.",
+        ["uniform_real_distribution"] = "равномерное распределение вещественных чисел.",
+        ["iostream"] = "заголовок стандартных потоков ввода и вывода.",
+        ["iomanip"] = "заголовок манипуляторов форматирования потоков.",
+        ["algorithm"] = "заголовок стандартных алгоритмов.",
+        ["numeric"] = "заголовок числовых алгоритмов.",
+        ["memory"] = "заголовок умных указателей и управления памятью.",
+        ["utility"] = "заголовок pair, move, forward и других утилит.",
+        ["stdexcept"] = "заголовок стандартных исключений.",
+        ["limits"] = "заголовок пределов числовых типов.",
+        ["cassert"] = "заголовок макроса assert.",
+        ["main"] = "точка входа обычной C++ программы.",
+        ["argc"] = "количество аргументов командной строки.",
+        ["argv"] = "массив аргументов командной строки.",
     };
 
     private static readonly Dictionary<string, string> ProgramWords = new(StringComparer.OrdinalIgnoreCase)
@@ -393,23 +674,26 @@ public static class LocalAssistant
         return compact;
     }
 
-    public static string Analyze(string text, ProgrammingLanguage language)
+    public static AssistantResult Analyze(string text, ProgrammingLanguage language)
     {
         var value = text.Trim();
         if (value.Length == 0)
         {
-            return "Выделение пустое. Выделите слово, строку или фрагмент кода и нажмите Ctrl+Shift+Space.";
+            return new AssistantResult(
+                "Выделение пустое. Выделите слово, строку или фрагмент кода и нажмите Ctrl+Shift+Space.",
+                string.Empty);
         }
 
         var terms = language == ProgrammingLanguage.Python ? PythonTerms : CppTerms;
         var languageName = language == ProgrammingLanguage.Python ? "Python" : "C++";
-        var result = new StringBuilder();
+        var definition = new StringBuilder();
+        var exampleResult = new StringBuilder();
 
         var trimmedLines = value.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (trimmedLines.Length > 1)
         {
-            result.AppendLine(BuildStructureSummary(value, language));
-            result.AppendLine();
+            definition.AppendLine(BuildStructureSummary(value, language));
+            definition.AppendLine();
         }
 
         var found = new List<(string Token, string Explanation)>();
@@ -434,7 +718,7 @@ public static class LocalAssistant
             for (var index = 0; index < displayed.Length; index++)
             {
                 var item = displayed[index];
-                result.AppendLine($"{item.Token} — {item.Explanation}");
+                definition.AppendLine($"{item.Token} — {item.Explanation}");
 
                 if (index == 0)
                 {
@@ -442,48 +726,52 @@ public static class LocalAssistant
                     var usage = BuildUsage(item.Token, language);
                     if (example.Length > 0)
                     {
-                        result.AppendLine();
-                        result.AppendLine("Пример:");
-                        result.AppendLine(example);
+                        exampleResult.AppendLine(example);
                     }
 
                     if (usage.Length > 0)
                     {
-                        result.AppendLine();
-                        result.AppendLine("Правильное использование:");
-                        result.AppendLine(usage);
+                        if (exampleResult.Length > 0)
+                        {
+                            exampleResult.AppendLine();
+                        }
+
+                        exampleResult.AppendLine("Правильное использование:");
+                        exampleResult.AppendLine(usage);
                     }
                 }
 
                 if (index < displayed.Length - 1)
                 {
-                    result.AppendLine();
+                    definition.AppendLine();
                 }
             }
         }
         else if (trimmedLines.Length == 1 && Regex.IsMatch(value, @"^[A-Za-z_][A-Za-z_0-9]*$"))
         {
-            result.AppendLine($"«{value}» не найдено в локальной справочной базе {languageName}.");
-            result.AppendLine("Скорее всего, это имя переменной, функции или класса из конкретного проекта.");
+            definition.AppendLine($"«{value}» не найдено в локальной справочной базе {languageName}.");
+            definition.AppendLine("Скорее всего, это имя переменной, функции или класса из конкретного проекта.");
         }
 
         var syntax = BuildSyntaxHints(value, language);
         if (syntax.Count > 0)
         {
-            result.AppendLine();
+            definition.AppendLine();
             foreach (var hint in syntax.Distinct())
             {
-                result.AppendLine(hint);
+                definition.AppendLine(hint);
             }
         }
 
         if (found.Count == 0 && syntax.Count == 0)
         {
-            result.AppendLine("Фрагмент не похож на известную конструкцию из локальной справки.");
-            result.AppendLine("Можно вставить более длинную строку — тогда приложение попробует определить её структуру.");
+            definition.AppendLine("Фрагмент не похож на известную конструкцию из локальной справки.");
+            definition.AppendLine("Можно вставить более длинную строку — тогда приложение попробует определить её структуру.");
         }
 
-        return result.ToString().TrimEnd();
+        return new AssistantResult(
+            definition.ToString().TrimEnd(),
+            exampleResult.ToString().TrimEnd());
     }
 
     private static string BuildExample(string token, ProgrammingLanguage language)
@@ -522,15 +810,46 @@ public static class LocalAssistant
             "auto" => "auto count = users.size();",
             "unique_ptr" => "auto user = std::make_unique<User>();",
             "shared_ptr" => "auto user = std::make_shared<User>();",
+            "weak_ptr" => "std::weak_ptr<User> observer = user;",
             "vector" => "std::vector<int> values{1, 2, 3};",
+            "array" => "std::array<int, 3> values{1, 2, 3};",
+            "map" => "std::map<std::string, int> scores{{\"Anna\", 10}};",
+            "unordered_map" => "std::unordered_map<std::string, int> cache;",
+            "set" => "std::set<int> uniqueValues{3, 1, 2};",
+            "queue" => "std::queue<int> tasks;\ntasks.push(1);",
+            "stack" => "std::stack<int> history;\nhistory.push(1);",
+            "optional" => "std::optional<int> port = 8080;\nif (port) use(*port);",
+            "variant" => "std::variant<int, std::string> value = \"ok\";",
+            "string_view" => "std::string_view name = \"Anna\";",
             "class" => "class User {\npublic:\n    std::string name;\n};",
             "struct" => "struct Point {\n    int x{};\n    int y{};\n};",
             "if" => "if (score >= 60) {\n    std::cout << \"passed\";\n}",
             "for" => "for (const auto& item : items) {\n    process(item);\n}",
             "switch" => "switch (command) {\n    case 1: run(); break;\n    default: stop();\n}",
             "template" => "template <typename T>\nT max_value(T a, T b) { return a > b ? a : b; }",
+            "concept" => "template <typename T>\nconcept Number = std::is_arithmetic_v<T>;",
+            "static_cast" => "double value = static_cast<double>(count);",
+            "sizeof" => "const auto bytes = sizeof(User);",
             "thread" => "std::thread worker([] {\n    do_work();\n});\nworker.join();",
             "mutex" => "std::lock_guard<std::mutex> guard(dataMutex);",
+            "atomic" => "std::atomic<bool> ready{false};\nready.store(true);",
+            "condition_variable" => "condition.wait(lock, [] { return ready; });",
+            "async" => "auto result = std::async(std::launch::async, calculate);",
+            "future" => "std::future<int> result = std::async(calculate);",
+            "sort" => "std::sort(values.begin(), values.end());",
+            "find_if" => "auto it = std::find_if(values.begin(), values.end(), is_valid);",
+            "accumulate" => "const auto total = std::accumulate(values.begin(), values.end(), 0);",
+            "transform" => "std::transform(values.begin(), values.end(), values.begin(), square);",
+            "emplace_back" => "users.emplace_back(\"Anna\", 20);",
+            "push_back" => "values.push_back(42);",
+            "filesystem" => "std::filesystem::path file = \"data.txt\";",
+            "path" => "std::filesystem::path file = \"data.txt\";",
+            "regex" => "std::regex pattern(R\"(\\d+)\");",
+            "chrono" => "auto start = std::chrono::steady_clock::now();",
+            "duration_cast" => "auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);",
+            "ranges" => "auto even = values | std::views::filter([](int x) { return x % 2 == 0; });",
+            "begin" => "auto first = std::begin(values);",
+            "end" => "auto last = std::end(values);",
             "nullptr" => "User* user = nullptr;",
             "constexpr" => "constexpr int bufferSize = 1024;",
             "include" => "#include <vector>",
@@ -568,21 +887,32 @@ public static class LocalAssistant
             "mutable" => "Используйте только для внутреннего технического состояния, например кэша или счётчика; логическое состояние объекта менять не следует.",
             "unique_ptr" => "Предпочитайте, когда объектом владеет один владелец; память освобождается автоматически.",
             "shared_ptr" => "Используйте только при действительно совместном владении и избегайте лишних циклов ссылок.",
+            "weak_ptr" => "Используйте для наблюдения без продления времени жизни объекта; проверяйте результат lock().",
             "const" => "Помечайте значения и методы неизменяемыми, если они не должны менять наблюдаемое состояние.",
             "thread" => "Завершайте поток через join или корректно передавайте владение через std::jthread.",
             "mutex" => "Защищайте общий ресурс коротким блоком и используйте RAII-обёртки вроде lock_guard.",
+            "atomic" => "Используйте для простых общих значений между потоками; сложные структуры защищайте mutex.",
+            "condition_variable" => "Всегда проверяйте условие в предикате wait, чтобы корректно обработать ложные пробуждения.",
+            "unique_lock" or "lock_guard" => "Связывайте блокировку с областью видимости RAII-объекта и не вызывайте lock вручную без необходимости.",
+            "optional" => "Используйте, когда отсутствие значения является нормальным результатом, а не ошибкой.",
+            "vector" or "array" => "Предпочитайте контейнеры сырым массивам; проверяйте время жизни ссылок и итераторов.",
+            "sort" => "Передавайте диапазон с корректными итераторами; по умолчанию сортировка выполняется по возрастанию.",
+            "filesystem" or "path" => "Собирайте пути через std::filesystem::path, а не конкатенацией строк.",
+            "ranges" => "Используйте ленивые представления для цепочек преобразований без лишних промежуточных контейнеров.",
             "template" => "Используйте для обобщённого кода, когда алгоритм не зависит от конкретного типа.",
             "virtual" or "override" => "Для переопределения базового поведения помечайте базовый метод virtual, а дочерний override.",
             _ => string.Empty,
         };
     }
 
-    public static string Translate(string text)
+    public static AssistantResult Translate(string text)
     {
         var value = text.Trim();
         if (value.Length == 0)
         {
-            return "Выделение пустое. Выделите английский текст и нажмите Ctrl+Shift+Space.";
+            return new AssistantResult(
+                "Выделение пустое. Выделите английский текст и нажмите Ctrl+Shift+Space.",
+                string.Empty);
         }
 
         var singleWord = Regex.Match(value, @"^[A-Za-z_][A-Za-z0-9_]*$");
@@ -590,9 +920,11 @@ public static class LocalAssistant
         {
             var word = singleWord.Value;
             var translatedWord = TranslateIdentifier(word);
-            return translatedWord != word
-                ? $"{word}  →  {translatedWord}"
-                : $"{word}  →  нет в локальном словаре";
+            return new AssistantResult(
+                translatedWord != word
+                    ? $"{word}  →  {translatedWord}"
+                    : $"{word}  →  нет в локальном словаре",
+                string.Empty);
         }
 
         var result = value;
@@ -606,7 +938,7 @@ public static class LocalAssistant
             return TranslateIdentifier(match.Value);
         });
 
-        return "Перевод:\r\n" + result;
+        return new AssistantResult("Перевод:\r\n" + result, string.Empty);
     }
 
     private static string TranslateIdentifier(string identifier)
@@ -678,7 +1010,9 @@ public static class LocalAssistant
             if (Regex.IsMatch(text, @"\b(for|while|do)\b")) parts.Add("содержит цикл");
             if (Regex.IsMatch(text, @"\b(if|else|switch|case)\b")) parts.Add("содержит условный выбор");
             if (Regex.IsMatch(text, @"\b(try|catch|throw)\b")) parts.Add("использует исключения");
-            if (Regex.IsMatch(text, @"\b(std::|vector|string|map|set)\b")) parts.Add("использует элементы стандартной библиотеки");
+            if (Regex.IsMatch(text, @"\b(std::|vector|string|map|set|array|optional|variant|ranges|filesystem)\b")) parts.Add("использует элементы стандартной библиотеки");
+            if (Regex.IsMatch(text, @"\b(thread|jthread|mutex|atomic|future|async)\b")) parts.Add("использует многопоточность или асинхронную операцию");
+            if (Regex.IsMatch(text, @"\b(sort|find|transform|accumulate|lower_bound)\b")) parts.Add("использует алгоритм стандартной библиотеки");
             if (Regex.IsMatch(text, @"\b(main)\s*\(")) parts.Add("содержит точку входа программы");
             if (Regex.IsMatch(text, @"\b(return)\b")) parts.Add("возвращает значение из функции");
             if (Regex.IsMatch(text, @"\b(namespace|using)\b")) parts.Add("работает с пространством имён или псевдонимом");
@@ -705,6 +1039,9 @@ public static class LocalAssistant
         if (Regex.IsMatch(text, @"\b\w+\s*\(")) hints.Add("вызывается функция или метод");
         if (language == ProgrammingLanguage.Cpp && Regex.IsMatch(text, @"::|->|\*\s*\w+|\w+\s*&")) hints.Add("используется обращение к пространству имён, члену, указателю или ссылке");
         if (language == ProgrammingLanguage.Cpp && Regex.IsMatch(text, @"<<|>>")) hints.Add("используется потоковый ввод или вывод");
+        if (language == ProgrammingLanguage.Cpp && Regex.IsMatch(text, @"\[[^\]]*\]\s*\(")) hints.Add("используется lambda-выражение");
+        if (language == ProgrammingLanguage.Cpp && Regex.IsMatch(text, @"\btemplate\b|\bconcept\b|\brequires\b")) hints.Add("используются шаблоны или ограничения типов");
+        if (language == ProgrammingLanguage.Cpp && Regex.IsMatch(text, @"\b(std::move|std::forward)\b")) hints.Add("используется семантика перемещения");
         if (language == ProgrammingLanguage.Python && Regex.IsMatch(text, @"\b\w+\s*\[.*\]")) hints.Add("обращение к элементу по индексу или ключу");
         if (language == ProgrammingLanguage.Python && Regex.IsMatch(text, @"\*\w+|\*\*\w+")) hints.Add("распаковываются аргументы функции");
         if (language == ProgrammingLanguage.Python && Regex.IsMatch(text, @"f[""']")) hints.Add("используется форматированная строка");
