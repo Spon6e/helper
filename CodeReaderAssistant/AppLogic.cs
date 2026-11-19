@@ -275,6 +275,51 @@ public static class LocalAssistant
         ["read file"] = "прочитать файл", ["write file"] = "записать файл",
         ["how does this work"] = "как это работает", ["what does this mean"] = "что это означает",
         ["for each"] = "для каждого", ["not found"] = "не найдено", ["access denied"] = "доступ запрещён",
+        ["user"] = "пользователь", ["username"] = "имя пользователя", ["password"] = "пароль",
+        ["email"] = "электронная почта", ["phone"] = "телефон", ["address"] = "адрес",
+        ["id"] = "идентификатор", ["identifier"] = "идентификатор", ["index"] = "индекс",
+        ["key"] = "ключ", ["keys"] = "ключи", ["label"] = "подпись", ["title"] = "заголовок",
+        ["description"] = "описание", ["content"] = "содержимое", ["message"] = "сообщение",
+        ["count"] = "количество", ["length"] = "длина", ["size"] = "размер", ["capacity"] = "ёмкость",
+        ["width"] = "ширина", ["height"] = "высота", ["color"] = "цвет", ["position"] = "позиция",
+        ["location"] = "расположение", ["path"] = "путь", ["url"] = "адрес URL", ["uri"] = "адрес URI",
+        ["host"] = "хост", ["port"] = "порт", ["protocol"] = "протокол", ["version"] = "версия",
+        ["config"] = "конфигурация", ["configuration"] = "конфигурация", ["settings"] = "настройки",
+        ["option"] = "параметр", ["options"] = "параметры", ["parameter"] = "параметр", ["parameters"] = "параметры",
+        ["param"] = "параметр", ["params"] = "параметры", ["argument"] = "аргумент", ["arguments"] = "аргументы",
+        ["args"] = "аргументы", ["kwargs"] = "именованные аргументы", ["item"] = "элемент",
+        ["element"] = "элемент", ["entry"] = "запись", ["record"] = "запись", ["row"] = "строка",
+        ["column"] = "столбец", ["field"] = "поле", ["property"] = "свойство", ["attribute"] = "атрибут",
+        ["source"] = "источник", ["target"] = "цель", ["destination"] = "назначение", ["parent"] = "родитель",
+        ["child"] = "дочерний элемент", ["root"] = "корень", ["node"] = "узел", ["edge"] = "ребро",
+        ["queue"] = "очередь", ["stack"] = "стек", ["buffer"] = "буфер", ["cache"] = "кэш",
+        ["memory"] = "память", ["stream"] = "поток", ["reader"] = "читатель", ["writer"] = "писатель",
+        ["parser"] = "анализатор", ["formatter"] = "форматировщик", ["serializer"] = "сериализатор",
+        ["deserializer"] = "десериализатор", ["handler"] = "обработчик", ["callback"] = "обратный вызов",
+        ["listener"] = "слушатель", ["observer"] = "наблюдатель", ["manager"] = "менеджер",
+        ["controller"] = "контроллер", ["service"] = "сервис", ["client"] = "клиент", ["server"] = "сервер",
+        ["worker"] = "рабочий поток", ["task"] = "задача", ["job"] = "задание", ["thread"] = "поток",
+        ["lock"] = "блокировка", ["event"] = "событие", ["signal"] = "сигнал", ["state"] = "состояние",
+        ["status"] = "статус", ["mode"] = "режим", ["level"] = "уровень", ["priority"] = "приоритет",
+        ["current"] = "текущий", ["default"] = "по умолчанию",
+        ["enabled"] = "включён", ["disabled"] = "отключён", ["active"] = "активный", ["inactive"] = "неактивный",
+        ["visible"] = "видимый", ["hidden"] = "скрытый", ["empty"] = "пустой", ["valid"] = "действительный",
+        ["invalid"] = "недействительный", ["success"] = "успех", ["failure"] = "ошибка", ["failed"] = "не выполнен",
+        ["request"] = "запрос", ["response"] = "ответ", ["header"] = "заголовок", ["body"] = "тело",
+        ["token"] = "токен", ["cookie"] = "cookie", ["session"] = "сеанс", ["connection"] = "соединение",
+        ["connect"] = "подключить", ["disconnect"] = "отключить", ["fetch"] = "получить данные",
+        ["send"] = "отправить", ["receive"] = "получить", ["update"] = "обновить", ["insert"] = "вставить",
+        ["append"] = "добавить в конец", ["push"] = "добавить в стек", ["pop"] = "извлечь из стека",
+        ["load"] = "загрузить", ["save"] = "сохранить", ["store"] = "сохранить", ["parse"] = "разобрать",
+        ["format"] = "форматировать", ["convert"] = "преобразовать", ["validate"] = "проверить",
+        ["process"] = "обработать", ["handle"] = "обработать", ["execute"] = "выполнить", ["calculate"] = "вычислить",
+        ["compute"] = "вычислить", ["generate"] = "сгенерировать", ["build"] = "собрать", ["initialize"] = "инициализировать",
+        ["init"] = "инициализация", ["cleanup"] = "очистка", ["reset"] = "сбросить", ["retry"] = "повторить",
+        ["temp"] = "временный", ["temporary"] = "временный", ["random"] = "случайный", ["min"] = "минимум",
+        ["max"] = "максимум", ["average"] = "среднее", ["total"] = "итого", ["sum"] = "сумма",
+        ["http"] = "HTTP", ["json"] = "JSON", ["xml"] = "XML", ["api"] = "API", ["gui"] = "интерфейс",
+        ["ui"] = "интерфейс", ["database"] = "база данных", ["db"] = "база данных", ["table"] = "таблица",
+        ["query"] = "запрос", ["schema"] = "схема", ["model"] = "модель", ["view"] = "представление",
     };
 
     public static string Analyze(string text, ProgrammingLanguage language)
@@ -357,12 +402,13 @@ public static class LocalAssistant
             return "Выделение пустое. Выделите английский текст и нажмите Ctrl+Shift+Space.";
         }
 
-        var singleWord = Regex.Match(value, @"^[A-Za-z]+(?:['-][A-Za-z]+)?$");
+        var singleWord = Regex.Match(value, @"^[A-Za-z_][A-Za-z0-9_]*$");
         if (singleWord.Success)
         {
             var word = singleWord.Value;
-            return RussianWords.TryGetValue(word, out var translatedWord)
-                ? $"{word}  →  {PreserveCase(word, translatedWord)}"
+            var translatedWord = TranslateIdentifier(word);
+            return translatedWord != word
+                ? $"{word}  →  {translatedWord}"
                 : $"{word}  →  нет в локальном словаре";
         }
 
@@ -372,15 +418,44 @@ public static class LocalAssistant
             result = Regex.Replace(result, $@"\b{Regex.Escape(phrase.Key)}\b", phrase.Value, RegexOptions.IgnoreCase);
         }
 
-        result = Regex.Replace(result, @"[A-Za-z]+(?:'[A-Za-z]+)?", match =>
+        result = Regex.Replace(result, @"[A-Za-z_][A-Za-z0-9_]*(?:'[A-Za-z]+)?", match =>
         {
-            var word = match.Value;
-            return RussianWords.TryGetValue(word, out var translated)
-                ? PreserveCase(word, translated)
-                : word;
+            return TranslateIdentifier(match.Value);
         });
 
         return "Перевод:\r\n" + result;
+    }
+
+    private static string TranslateIdentifier(string identifier)
+    {
+        if (RussianWords.TryGetValue(identifier, out var directTranslation))
+        {
+            return PreserveCase(identifier, directTranslation);
+        }
+
+        if (identifier.StartsWith("__", StringComparison.Ordinal)
+            && identifier.EndsWith("__", StringComparison.Ordinal))
+        {
+            return identifier;
+        }
+
+        var spaced = Regex.Replace(identifier, @"([A-Z]+)([A-Z][a-z])", "$1 $2");
+        spaced = Regex.Replace(spaced, @"([a-z0-9])([A-Z])", "$1 $2");
+        var parts = spaced.Split('_', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .SelectMany(part => part.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .ToArray();
+
+        if (parts.Length < 2)
+        {
+            return identifier;
+        }
+
+        var translatedParts = parts.Select(part =>
+            RussianWords.TryGetValue(part, out var translation) ? translation : part).ToArray();
+        var changed = translatedParts.Where((part, index) => part != parts[index]).Any();
+        return changed
+            ? string.Join(" ", translatedParts)
+            : identifier;
     }
 
     private static string PreserveCase(string source, string translated)
