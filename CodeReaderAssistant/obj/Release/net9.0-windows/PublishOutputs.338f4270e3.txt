@@ -1,3 +1,4 @@
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\dictionary\en-ru-10000.json
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.exe
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.dll
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\publish\CodeReaderAssistant.deps.json

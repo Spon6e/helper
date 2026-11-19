@@ -12,3 +12,4 @@ C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssist
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.pdb
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\CodeReaderAssistant.genruntimeconfig.cache
 C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\obj\Release\net9.0-windows\ref\CodeReaderAssistant.dll
+C:\Users\Данил\Documents\Codex\2026-11-16\new-chat\outputs\CodeReaderAssistant\bin\Release\net9.0-windows\dictionary\en-ru-10000.json

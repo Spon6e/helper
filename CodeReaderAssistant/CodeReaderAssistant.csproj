@@ -17,4 +17,9 @@
       <HintPath>lib\UIAutomationTypes.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="dictionary\en-ru-10000.json"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="Always" />
+  </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace CodeReaderAssistant;
@@ -237,7 +238,7 @@ public static class LocalAssistant
         ["async"] = "запускает функцию асинхронно и возвращает future.",
     };
 
-    private static readonly Dictionary<string, string> RussianWords = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, string> ProgramWords = new(StringComparer.OrdinalIgnoreCase)
     {
         ["a"] = "один", ["an"] = "один", ["the"] = "этот", ["this"] = "это",
         ["is"] = "является", ["are"] = "являются", ["was"] = "был", ["were"] = "были",
@@ -322,6 +323,76 @@ public static class LocalAssistant
         ["query"] = "запрос", ["schema"] = "схема", ["model"] = "модель", ["view"] = "представление",
     };
 
+    private static readonly Dictionary<string, string> RussianWords = LoadRussianWords();
+
+    private sealed class ExternalDictionaryEntry
+    {
+        public string Word { get; set; } = string.Empty;
+        public string Translation { get; set; } = string.Empty;
+    }
+
+    private static Dictionary<string, string> LoadRussianWords()
+    {
+        var words = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var dictionaryPath = Path.Combine(AppContext.BaseDirectory, "dictionary", "en-ru-10000.json");
+
+        try
+        {
+            if (File.Exists(dictionaryPath))
+            {
+                var json = File.ReadAllText(dictionaryPath);
+                var externalWords = JsonSerializer.Deserialize<List<ExternalDictionaryEntry>>(
+                    json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
+
+                foreach (var entry in externalWords)
+                {
+                    var word = entry.Word.Trim();
+                    var translation = CompactTranslation(entry.Translation);
+                    if (word.Length > 0 && translation.Length > 0)
+                    {
+                        words[word] = translation;
+                    }
+                }
+            }
+        }
+        catch (IOException)
+        {
+            // The app can continue with the curated programming dictionary.
+        }
+        catch (JsonException)
+        {
+            // A damaged optional dictionary must not prevent the app from opening.
+        }
+
+        foreach (var pair in ProgramWords)
+        {
+            words[pair.Key] = pair.Value;
+        }
+
+        return words;
+    }
+
+    private static string CompactTranslation(string translation)
+    {
+        var compact = Regex.Split(translation ?? string.Empty, @"\|перевод=|\{\{|#")[0];
+        compact = Regex.Replace(compact, @"\s+", " ").Trim(' ', ',', ';', '.');
+        if (compact.Length == 0 || compact == "—")
+        {
+            return string.Empty;
+        }
+
+        if (compact.Length > 86)
+        {
+            var comma = compact.IndexOf(',');
+            compact = comma > 0 && comma < 70
+                ? compact[..comma]
+                : compact[..83] + "...";
+        }
+
+        return compact;
+    }
+
     public static string Analyze(string text, ProgrammingLanguage language)
     {
         var value = text.Trim();
@@ -333,13 +404,10 @@ public static class LocalAssistant
         var terms = language == ProgrammingLanguage.Python ? PythonTerms : CppTerms;
         var languageName = language == ProgrammingLanguage.Python ? "Python" : "C++";
         var result = new StringBuilder();
-        result.AppendLine($"Язык: {languageName}");
-        result.AppendLine();
 
         var trimmedLines = value.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (trimmedLines.Length > 1)
         {
-            result.AppendLine("Что делает фрагмент:");
             result.AppendLine(BuildStructureSummary(value, language));
             result.AppendLine();
         }
@@ -362,10 +430,35 @@ public static class LocalAssistant
 
         if (found.Count > 0)
         {
-            result.AppendLine("Найденные команды и слова:");
-            foreach (var item in found.Take(12))
+            var displayed = found.Take(12).ToArray();
+            for (var index = 0; index < displayed.Length; index++)
             {
-                result.AppendLine($"• {item.Token} — {item.Explanation}");
+                var item = displayed[index];
+                result.AppendLine($"{item.Token} — {item.Explanation}");
+
+                if (index == 0)
+                {
+                    var example = BuildExample(item.Token, language);
+                    var usage = BuildUsage(item.Token, language);
+                    if (example.Length > 0)
+                    {
+                        result.AppendLine();
+                        result.AppendLine("Пример:");
+                        result.AppendLine(example);
+                    }
+
+                    if (usage.Length > 0)
+                    {
+                        result.AppendLine();
+                        result.AppendLine("Правильное использование:");
+                        result.AppendLine(usage);
+                    }
+                }
+
+                if (index < displayed.Length - 1)
+                {
+                    result.AppendLine();
+                }
             }
         }
         else if (trimmedLines.Length == 1 && Regex.IsMatch(value, @"^[A-Za-z_][A-Za-z_0-9]*$"))
@@ -378,10 +471,9 @@ public static class LocalAssistant
         if (syntax.Count > 0)
         {
             result.AppendLine();
-            result.AppendLine("Дополнительные признаки:");
             foreach (var hint in syntax.Distinct())
             {
-                result.AppendLine($"• {hint}");
+                result.AppendLine(hint);
             }
         }
 
@@ -392,6 +484,97 @@ public static class LocalAssistant
         }
 
         return result.ToString().TrimEnd();
+    }
+
+    private static string BuildExample(string token, ProgrammingLanguage language)
+    {
+        var separator = token.LastIndexOf("::", StringComparison.Ordinal);
+        var name = (separator >= 0 ? token[(separator + 2)..] : token).ToLowerInvariant();
+        if (language == ProgrammingLanguage.Python)
+        {
+            return name switch
+            {
+                "def" => "def greet(name):\n    return f\"Hello, {name}\"",
+                "if" => "if score >= 60:\n    print(\"passed\")",
+                "for" => "for item in items:\n    print(item)",
+                "while" => "while queue:\n    item = queue.pop(0)",
+                "with" => "with open(\"data.txt\", encoding=\"utf-8\") as file:\n    text = file.read()",
+                "class" => "class User:\n    pass",
+                "import" => "import json\ndata = json.loads(text)",
+                "try" => "try:\n    value = int(text)\nexcept ValueError:\n    value = 0",
+                "async" => "async def load():\n    return await fetch()",
+                "await" => "result = await load_data()",
+                "lambda" => "double = lambda value: value * 2",
+                "list" => "names = [user.name for user in users]",
+                "dict" => "user = {\"name\": \"Anna\", \"age\": 20}",
+                "return" => "def total(items):\n    return sum(items)",
+                "yield" => "def numbers():\n    yield 1\n    yield 2",
+                "match" => "match command:\n    case \"start\":\n        run()",
+                "none" => "value = None",
+                _ => string.Empty,
+            };
+        }
+
+        return name switch
+        {
+            "mutable" => "class User {\n    mutable int cachedLength = 0;\npublic:\n    int length() const {\n        return ++cachedLength;\n    }\n};",
+            "const" => "const int maxUsers = 100;",
+            "auto" => "auto count = users.size();",
+            "unique_ptr" => "auto user = std::make_unique<User>();",
+            "shared_ptr" => "auto user = std::make_shared<User>();",
+            "vector" => "std::vector<int> values{1, 2, 3};",
+            "class" => "class User {\npublic:\n    std::string name;\n};",
+            "struct" => "struct Point {\n    int x{};\n    int y{};\n};",
+            "if" => "if (score >= 60) {\n    std::cout << \"passed\";\n}",
+            "for" => "for (const auto& item : items) {\n    process(item);\n}",
+            "switch" => "switch (command) {\n    case 1: run(); break;\n    default: stop();\n}",
+            "template" => "template <typename T>\nT max_value(T a, T b) { return a > b ? a : b; }",
+            "thread" => "std::thread worker([] {\n    do_work();\n});\nworker.join();",
+            "mutex" => "std::lock_guard<std::mutex> guard(dataMutex);",
+            "nullptr" => "User* user = nullptr;",
+            "constexpr" => "constexpr int bufferSize = 1024;",
+            "include" => "#include <vector>",
+            "return" => "int total() {\n    return 42;\n}",
+            "namespace" => "namespace app {\n    class User {};\n}",
+            "virtual" => "virtual void draw() const = 0;",
+            "override" => "void draw() const override;",
+            "string" => "std::string name = \"Anna\";",
+            "cout" => "std::cout << \"Hello\" << std::endl;",
+            "cin" => "std::cin >> age;",
+            _ => string.Empty,
+        };
+    }
+
+    private static string BuildUsage(string token, ProgrammingLanguage language)
+    {
+        var separator = token.LastIndexOf("::", StringComparison.Ordinal);
+        var name = (separator >= 0 ? token[(separator + 2)..] : token).ToLowerInvariant();
+        if (language == ProgrammingLanguage.Python)
+        {
+            return name switch
+            {
+                "with" => "Используйте для файлов, блокировок и других ресурсов, которые нужно гарантированно закрыть.",
+                "try" => "Обрабатывайте ожидаемые исключения; не скрывайте ошибки пустым except.",
+                "async" or "await" => "Применяйте вместе с асинхронными функциями, когда операция действительно может ждать ввод-вывод.",
+                "lambda" => "Используйте для короткого выражения; для сложной логики лучше объявить def.",
+                "class" => "Используйте для объекта с состоянием и поведением, а не для группы несвязанных функций.",
+                "return" => "Возвращайте результат из функции и явно обрабатывайте его у вызывающего кода.",
+                _ => string.Empty,
+            };
+        }
+
+        return name switch
+        {
+            "mutable" => "Используйте только для внутреннего технического состояния, например кэша или счётчика; логическое состояние объекта менять не следует.",
+            "unique_ptr" => "Предпочитайте, когда объектом владеет один владелец; память освобождается автоматически.",
+            "shared_ptr" => "Используйте только при действительно совместном владении и избегайте лишних циклов ссылок.",
+            "const" => "Помечайте значения и методы неизменяемыми, если они не должны менять наблюдаемое состояние.",
+            "thread" => "Завершайте поток через join или корректно передавайте владение через std::jthread.",
+            "mutex" => "Защищайте общий ресурс коротким блоком и используйте RAII-обёртки вроде lock_guard.",
+            "template" => "Используйте для обобщённого кода, когда алгоритм не зависит от конкретного типа.",
+            "virtual" or "override" => "Для переопределения базового поведения помечайте базовый метод virtual, а дочерний override.",
+            _ => string.Empty,
+        };
     }
 
     public static string Translate(string text)

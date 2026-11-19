@@ -17,7 +17,7 @@ public sealed class MemoryEntry
 
 public sealed class MemoryStore
 {
-    private const string MemoryVersion = "local-v2";
+    private const string MemoryVersion = "local-v3";
     private readonly object sync = new();
     private readonly string filePath;
     private readonly List<MemoryEntry> entries;
